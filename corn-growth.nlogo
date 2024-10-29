@@ -41,18 +41,18 @@ to setup-environment
 end
 
 to setup-corn-plants
-  let x-start -12
-  let y-start -12
-  let spacing 3
-  let filas 5
-  let columnas 10
+  let x-start 0
+  let y-start 0
+  let spacing 4.5
+  let filas 12
+  let columnas 12
 
   ; Crear la cuadrícula de plantas en filas y columnas
   create-corn-plants filas * columnas [
     let fila int (who / columnas)   ; Determina la fila actual
     let columna (who mod columnas)  ; Determina la columna actual
     set shape "plant"
-    set size 0.5
+    set size 1
     setxy x-start + columna * spacing y-start + fila * spacing
     set health-status "Sano"
     set growth-stage "Semilla"
@@ -116,8 +116,8 @@ end
 GRAPHICS-WINDOW
 835
 14
-1272
-452
+1506
+686
 -1
 -1
 13.0
@@ -127,13 +127,13 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 0
-32
+50
 0
-32
+50
 0
 0
 1
@@ -183,7 +183,7 @@ temperature
 temperature
 10
 40
-20.0
+16.0
 2
 1
 NIL
@@ -198,7 +198,7 @@ precipitation
 precipitation
 0
 10
-2.0
+4.0
 1
 1
 NIL
@@ -213,7 +213,7 @@ sunlight-hours
 sunlight-hours
 6
 12
-8.0
+12.0
 1
 1
 NIL
@@ -225,8 +225,8 @@ MONITOR
 538
 296
 Humeda del suelo
-soil-moisture
-17
+avg-soil-moisture
+3
 1
 12
 
@@ -236,8 +236,8 @@ MONITOR
 544
 365
 Nivel de Nutrientes
-nutrient-level
-17
+avg-nutrient-level
+3
 1
 12
 
@@ -272,7 +272,6 @@ PENS
 "pen-2" 1.0 0 -2674135 true "" "count corn-plants with [health-status = \"Enfermo\"]"
 
 @#$#@#$#@
-
 
 ## WHAT IS IT?
 
@@ -633,7 +632,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.4.0
+NetLogo 6.3.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
