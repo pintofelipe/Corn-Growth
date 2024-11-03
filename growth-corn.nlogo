@@ -9,7 +9,7 @@ globals [
   altitud                  ; Altitud del terreno
 ]
 
-breed [plants plant]        ; Definir entidad de la planta
+breed [plants plant]       ; Definir entidad de la planta
 
 patches-own [
   moisture-level           ; Nivel de humedad del suelo
@@ -63,10 +63,12 @@ to setup-plantas
       ; Crear una planta en la posición especificada
       create-plants 1 [
         setxy col-start row-start ; Colocar la planta en la posición de la cuadrícula
+        set shape "plant"
         set color green
         set height plant-height-initial
         set health "sana"
         set growth-stage "semilla" ; Etapa inicial de crecimiento
+
       ]
       set col-start col-start + plant-spacing / 10 ; Ajuste de un espacio entre plantas en cm
     ]
@@ -97,8 +99,40 @@ to go
       ]
     ]
   ]
+
+    actualizar-plots
   tick  ; Avanzar el reloj de simulación
 end
+
+
+
+
+to actualizar-plots
+  ; Gráfico de Altura Promedio
+  set-current-plot "Average Plant Height"
+  set-current-plot-pen "Height"
+  plot mean [height] of plants
+
+  ; Gráfico de Estado de Salud de las Plantas
+  ;set-current-plot "Plant Health Status"
+  ;set-current-plot-pen "Healthy"
+  plot count plants with [health = "sana"]
+  set-current-plot-pen "Unhealthy"
+  plot count plants with [health = "enferma"]
+
+  ; Gráfico de Etapa de Crecimiento
+  set-current-plot "Plant Growth Stage"
+  set-current-plot-pen "Seed"
+  plot count plants with [growth-stage = "semilla"]
+  set-current-plot-pen "Seedling"
+  plot count plants with [growth-stage = "plántula"]
+  set-current-plot-pen "Mature"
+  plot count plants with [growth-stage = "madura"]
+end
+
+
+
+
 @#$#@#$#@
 GRAPHICS-WINDOW
 558
@@ -134,7 +168,7 @@ BUTTON
 99
 go
 go
-T
+NIL
 1
 T
 OBSERVER
@@ -160,6 +194,60 @@ NIL
 NIL
 NIL
 1
+
+PLOT
+12
+285
+212
+467
+Average Plant Height
+days
+Hight
+0.0
+100.0
+0.0
+200.0
+true
+false
+"" ""
+PENS
+"Average Plant Height" 1.0 0 -7500403 true "" "plot mean [height] of plants"
+
+PLOT
+225
+318
+425
+468
+sick plants vs healthy plants
+sick
+healthy
+0.0
+50000.0
+0.0
+50000.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count turtles"
+
+PLOT
+101
+486
+301
+636
+growth status
+time
+stage
+0.0
+100.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count turtles"
 
 @#$#@#$#@
 ## WHAT IS IT?

@@ -40,6 +40,7 @@ to setup
   setup-terreno
   setup-plantas
   reset-ticks
+
 end
 
 to setup-terreno
@@ -66,8 +67,8 @@ to setup-plantas
         set shape "plant"
         set color green
         set height plant-height-initial
-        set health "sana"
-        set growth-stage "semilla" ; Etapa inicial de crecimiento
+        set health "healthy"
+        set growth-stage "seed" ; Etapa inicial de crecimiento
 
       ]
       set col-start col-start + plant-spacing / 10 ; Ajuste de un espacio entre plantas en cm
@@ -78,34 +79,89 @@ end
 
 
 to go
-  ask plants [
-    ; Verificar si la planta puede crecer
-    if health = "sana" [
-      let patch-nutrients [nutrient-level] of patch-here
-      let patch-moisture [moisture-level] of patch-here
+  ;Finaliza la simulacion (100 days)
+  if ticks >= 100[
+    stop
+  ]
 
-      ; Condiciones para el crecimiento
-      if patch-nutrients > min-nutrient-level and patch-moisture > ideal-precipitation [
-        set height height + 1  ; Aumentar la altura de la planta
-        ; Cambiar de etapa de crecimiento basado en la altura
-        if height > 10 [ set growth-stage "plántula" ]
-        if height > 100 [ set growth-stage "madura" ]
-        if height = max-plant-height [ set color yellow ]  ; Color cuando alcanza la madurez
-      ]
-      ; Verificar si la planta debe morir
-      if patch-nutrients < min-nutrient-level or patch-moisture < ideal-precipitation [
-        set health "enferma"
-        set color red  ; Cambiar color a rojo si está enferma
+
+  ;Definir condiciones de crecimiento de cada planta
+
+  ask plants[
+    ;Establece valores de temperatura minima y maxima
+    let temp-min 50 ; °F 10°C
+    let temp-max 86 ; °F 30°C
+
+    ;Calcular grados-dia de crecimiento (GDD)
+    let temp-current random-float (temp-max - temp-min) + temp-min
+    let GDD ((temp-current + temp-max)/ 2) - 50 ; °F
+
+    ;Revisar si la planta puede crecer
+    if GDD > 0 and health = "healthy" [
+    ;Incrementar la altura segun el GDD y actualiza el estado de crecimiento
+    set height min list (height + GDD * 0.1) max-plant-height ;Ajusta el coeficiente segun el crecimiento deseado evita exceder altura maxima
+
+    ;Cambiar las etapas de crecimiento basada en la altura
+    if height > 10 [set growth-stage "seedling"]
+    if height > 100 [set growth-stage "mature"]
+
+
+
+
+
+    ;Si la planta alcanza su altura maxima, detiene su crecimiento
+    if height >= max-plant-height [
+      set health "mature"
+      set color yellow
       ]
     ]
+
+   if GDD <= 0 or health != "healthy" [
+      ;Si el GDD no es suficiente, la planta podria enfermar
+      set health "sick"
+      set color red
+    ]
   ]
-  tick  ; Avanzar el reloj de simulación
+
+
+  ;Actualiza graficos y cuenta los ticks
+  actualizar-plots
+  tick
 end
+
+
+
+to actualizar-plots
+  ; Gráfico de Altura Promedio
+  set-current-plot "Average Plant Height"
+  set-current-plot-pen "Height"
+  plot mean [height] of plants
+
+  ;Gráfico de Estado de Salud de las Plantas
+  set-current-plot "Plant Health Status"
+  set-current-plot-pen "Healthy"
+  plot count plants with [health = "healthy"]
+  set-current-plot-pen "Sick"
+  plot count plants with [health = "sick"]
+
+
+  ; Gráfico de Etapa de Crecimiento
+  set-current-plot "Plant Growth Stage"
+  set-current-plot-pen "Seed"
+  plot count plants with [growth-stage = "seed"]
+  set-current-plot-pen "Seedling"
+  plot count plants with [growth-stage = "seedling"]
+  set-current-plot-pen "Mature"
+  plot count plants with [growth-stage = "mature"]
+end
+
+
+
 @#$#@#$#@
 GRAPHICS-WINDOW
-558
+829
 10
-1229
+1500
 682
 -1
 -1
@@ -136,7 +192,7 @@ BUTTON
 99
 go
 go
-NIL
+T
 1
 T
 OBSERVER
@@ -164,58 +220,72 @@ NIL
 1
 
 PLOT
-12
-317
-212
-467
+21
+221
+304
+403
 Average Plant Height
 days
-Haverage Hight
+Hight
+0.0
+100.0
 0.0
 200.0
+true
+true
+"" ""
+PENS
+"Height" 1.0 0 -8862290 true "" "plot mean [height] of plants"
+
+PLOT
+31
+457
+548
+632
+Plant Growth Stage
+days
+number-of-plant
 0.0
 100.0
+0.0
+1600.0
 true
-false
+true
 "" ""
 PENS
-"plant" 1.0 0 -16777216 true "" "plot count plant"
+"Seed" 1.0 0 -14439633 true "" "plot count plants with [growth-stage = \"seed\"]"
+"Seedling" 1.0 0 -15390905 true "" "plot count plants with [growth-stage = \"seedling\"]"
+"Mature" 1.0 0 -1184463 true "" "plot count plants with [growth-stage = \"mature\"]"
 
 PLOT
-225
-318
-425
-468
-sick plants vs healthy plants
-sick
-healthy
+320
+220
+596
+399
+Plant Health Status
+days
+number-of-plants
 0.0
-50000.0
+100.0
 0.0
-50000.0
+1600.0
 true
-false
+true
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot count turtles"
+"Healthy" 1.0 0 -15040220 true "" "plot count plants with [health = \"healthy\"]"
+"Sick" 1.0 0 -8431303 true "" "plot count plants with [health = \"sick\"]"
 
-PLOT
-101
-486
+MONITOR
+244
+83
 301
-636
-growth status
-time
-stage
-0.0
-100.0
-0.0
-10.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "plot count turtles"
+128
+plants
+count plants
+3
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
