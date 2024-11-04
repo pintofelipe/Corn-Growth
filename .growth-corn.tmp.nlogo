@@ -49,6 +49,8 @@ to setup-terreno
     set moisture-level 50
     set nutrient-level 100
   ]
+
+
 end
 
 to setup-plantas
@@ -89,12 +91,12 @@ to go
 
   ask plants[
     ;Establece valores de temperatura minima y maxima
-    let temp-min 50 ; °F 10°C
-    let temp-max 86 ; °F 30°C
+    let temp-min 10 ;°C
+    let temp-max 30 ;°C
 
     ;Calcular grados-dia de crecimiento (GDD)
     let temp-current random-float (temp-max - temp-min) + temp-min
-    let GDD ((temp-current + temp-max)/ 2) - 50 ; °F
+    let GDD ((temp-current + temp-max)/ 2) - 10 ; °F
 
     ;Revisar si la planta puede crecer
     if GDD > 0 and health = "healthy" [
@@ -104,9 +106,6 @@ to go
     ;Cambiar las etapas de crecimiento basada en la altura
     if height > 10 [set growth-stage "seedling"]
     if height > 100 [set growth-stage "mature"]
-
-
-
 
 
     ;Si la planta alcanza su altura maxima, detiene su crecimiento
@@ -121,6 +120,14 @@ to go
       set health "sick"
       set color red
     ]
+  ]
+
+  ;simular cambios en el suelo (Humeda y nutrientes)
+
+  ask patches[
+    ;Simular la reduccion aleatoria en los niveles de humedad y nutrientes
+    set moisture-level max list (0) (moisture-level - random 5)
+    set nutrient-level max list (0) (nutrient-level - random 3)
   ]
 
 
@@ -277,10 +284,10 @@ PENS
 "Sick" 1.0 0 -8431303 true "" "plot count plants with [health = \"sick\"]"
 
 MONITOR
-244
-83
-301
-128
+219
+152
+286
+197
 plants
 count plants
 3
