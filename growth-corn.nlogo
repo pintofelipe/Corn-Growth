@@ -305,35 +305,51 @@ count plants
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+This model simulates the growth of corn plants in a virtual environment, taking into account factors such as temperature, soil moisture, and available nutrients. The goal is to understand how these variables affect plant health and growth over time. The model allows you to observe the impact of different environmental conditions on plant growth and visualize how these variables change over time.
 
 ## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+The model uses agents that represent corn plants and patches that simulate the terrain. Plants follow the following rules: Growth: Plants grow based on accumulated degree days (GDD), which depend on temperature. If conditions are ideal, plants increase in height; otherwise, they can become sick.
+Health: Each plant can be in one of three health states: healthy, sick, or mature. A plant's health is determined by its ability to grow under current environmental conditions.
+Nutrients and moisture: Patches of land have nutrient and moisture levels that decrease over time, affecting plant growth.
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+To use the model, follow these steps in the interface tab: Setup button: Start the simulation and set up the initial environment with plants and soil.
+Go button: Start the simulation cycle, where plants will grow and soil conditions will be updated.
+Sliders: Adjust parameters such as maximum plant height, minimum nutrient level, and other environmental factors. This will influence the growth behavior of plants.
+Graphs: Observe graphs showing average plant height, health status, and growth stages over time.
 
 ## THINGS TO NOTICE
 
-(suggested things for the user to notice while running the model)
+While running the model, observe the following: How soil conditions affect plant growth. Are there any noticeable trends in plant height and health?
+The relationship between GDD and plant health. Do plants grow more when conditions are ideal?
+Changes in plant coloration depending on their health status and growth stage.
 
 ## THINGS TO TRY
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+Experiment with the following settings: Change the maximum height of the plants and see how it affects overall growth.
+Adjust the minimum nutrient level and see if the plants can stay healthy.
+Try different temperature and precipitation values ​​to see how they influence plant health and growth.
+Observe how moisture distribution in the soil affects plant growth.
 
 ## EXTENDING THE MODEL
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+To make the model more complicated and detailed, consider adding or changing the following in the code: Incorporate pests or diseases that can affect plant health and growth.
+Simulate different corn species with different growth requirements and characteristics.
+Add fertilization effects that influence soil nutrient levels and therefore plant growth.
+Include a crop rotation cycle that affects soil quality over time.
 
 ## NETLOGO FEATURES
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+The model uses several interesting NetLogo features, such as: Race: Different races (plants) are used to represent plants, making it easy to manage their specific properties.
+Own patches: Each patch of the terrain has individual properties (moisture level, nutrients), allowing to simulate a varied environment.
+Dynamic graphs: Graphs are updated in real time to show the progress of plant growth and health.
 
 ## RELATED MODELS
-
-(models in the NetLogo Models Library and elsewhere which are of related interest)
+Related models in the NetLogo library that may be of interest: Plant Growth: A model that shows how environmental conditions affect plant growth.
+Ecosystem: A model that simulates the interaction between different species in an ecosystem.
+Agriculture: Models that focus on agriculture and the impact of different practices on crop growth.
 
 ## CREDITS AND REFERENCES
 
