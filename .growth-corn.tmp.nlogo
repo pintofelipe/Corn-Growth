@@ -81,68 +81,76 @@ end
 
 
 to go
-  ;Finaliza la simulacion (100 days)
-  if ticks >= 100[
+  ; Finaliza la simulación (100 days)
+  if ticks >= 100 [
     stop
   ]
 
+  ; Definir condiciones de crecimiento de cada planta
+  ask plants [
+    let temp-current-min max list 10 (random-float 20 + 10) ; Temperatura mínima ajustada a 10°C si es menor
+    let temp-current-max min list 30 (random-float 20 + 10) ; Temperatura máxima ajustada a 30°C si es mayor
 
-  ;Definir condiciones de crecimiento de cada planta
+    ; Calcular GDD utilizando las temperaturas ajustadas
+    let GDD ((temp-current-min + temp-current-max) / 2) - 10 ; °C
 
-  ask plants[
-    ;Establece valores de temperatura minima y maxima
-    let temp-min 10 ;°C
-    let temp-max 30 ;°C
+    ; Revisar si la planta puede crecer
+    if (GDD > 0) and (health = "healthy") [
+      ; Incrementar la altura según el GDD y actualiza el estado de crecimiento
+      set height min list (height + GDD * 0.5) max-plant-height ; Ajuste del coeficiente de crecimiento
 
-    ;Calcular grados-dia de crecimiento (GDD)
-    let temp-current random-float (temp-max - temp-min) + temp-min
-    let GDD ((temp-current + temp-max)/ 2) - 10 ; °F
+      ; Cambiar las etapas de crecimiento y color según la altura
+      if height > 10 [
+        set growth-stage "seedling"
+        set color lime
+      ]
+      if height > 100 [
+        set growth-stage "mature"
+        set color yellow
+      ]
 
-    ;Revisar si la planta puede crecer
-    if GDD > 0 and health = "healthy" [
-    ;Incrementar la altura segun el GDD y actualiza el estado de crecimiento
-    set height min list (height + GDD * 0.1) max-plant-height ;Ajusta el coeficiente segun el crecimiento deseado evita exceder altura maxima
-
-    ;Cambiar las etapas de crecimiento basada en la altura
-    if height > 10 [set growth-stage "seedling"]
-    if height > 100 [set growth-stage "mature"]
-
-
-    ;Si la planta alcanza su altura maxima, detiene su crecimiento
-    if height >= max-plant-height [
-      set health "mature"
-      set color yellow
+      ; Si la planta alcanza su altura máxima, detiene su crecimiento
+      if height >= max-plant-height [
+        set health "mature"
+        set color brown
       ]
     ]
 
-   if GDD <= 0 or health != "healthy" [
-      ;Si el GDD no es suficiente, la planta podria enfermar
+    if GDD <= 0 or health != "healthy" [
+      ; Si el GDD no es suficiente, la planta podría enfermar
       set health "sick"
       set color red
     ]
   ]
 
-  ;simular cambios en el suelo (Humeda y nutrientes)
-
-  ask patches[
-    ;Simular la reduccion aleatoria en los niveles de humedad y nutrientes
-    set moisture-level max list (0) (moisture-level - random 5)
-    set nutrient-level max list (0) (nutrient-level - random 3)
+  ; Simular cambios en el suelo (humedad y nutrientes)
+  ask patches [
+    ; Simular la reducción aleatoria en los niveles de humedad y nutrientes
+    set moisture-level max list 0 (moisture-level - random 5)
+    set nutrient-level max list 0 (nutrient-level - random 3)
   ]
 
-
-  ;Actualiza graficos y cuenta los ticks
+  ; Actualiza gráficos y cuenta los ticks
   actualizar-plots
   tick
 end
 
 
 
+
+
+
 to actualizar-plots
+    ; Gráfico de Altura Promedio
   ; Gráfico de Altura Promedio
   set-current-plot "Average Plant Height"
   set-current-plot-pen "Height"
-  plot mean [height] of plants
+  ifelse any? plants with [health = "healthy"] [
+    plot mean [height] of plants with [health = "healthy"]
+  ] [
+    plot 0 ; Valor predeterminado si no hay plantas saludables
+  ]
+
 
   ;Gráfico de Estado de Salud de las Plantas
   set-current-plot "Plant Health Status"
@@ -233,12 +241,12 @@ PLOT
 403
 Average Plant Height
 days
-Hight
+Hight cm
 0.0
 100.0
 0.0
 200.0
-true
+false
 true
 "" ""
 PENS
@@ -246,7 +254,7 @@ PENS
 
 PLOT
 31
-457
+427
 548
 632
 Plant Growth Stage
@@ -256,7 +264,7 @@ number-of-plant
 100.0
 0.0
 1600.0
-true
+false
 true
 "" ""
 PENS
@@ -276,7 +284,7 @@ number-of-plants
 100.0
 0.0
 1600.0
-true
+false
 true
 "" ""
 PENS
