@@ -44,19 +44,19 @@ to setup-terreno
     set pcolor brown
     set moisture-level 50  ; %
     set nutrient-level 6.0 ; ph ideal
-    set temperature 25
+    set temperature 25     ; °C
   ]
 
 
 end
 
 to setup-plantas
-  let row-start -20
-  let plant-height-initial 5
+  let row-start -20  ;se define la posicion inicial en el eje y para la primera fila
+  let plant-height-initial 5  ; se define la altura de cada planta
 
   ; Para cada hilera
   while [row-start <= 20] [
-    let col-start -20    ; posición inicial en el eje x para la primera planta
+    let col-start -20    ; posición inicial en el eje x para la primera planta en la fila
 
     ; Para cada planta en la hilera
     while [col-start <= 20] [
@@ -362,10 +362,7 @@ Nutrients and moisture: Patches of land have nutrient and moisture levels that d
 
 ## HOW TO USE IT
 
-To use the model, follow these steps in the interface tab: Setup button: Start the simulation and set up the initial environment with plants and soil.
-Go button: Start the simulation cycle, where plants will grow and soil conditions will be updated.
-Sliders: Adjust parameters such as maximum plant height, minimum nutrient level, and other environmental factors. This will influence the growth behavior of plants.
-Graphs: Observe graphs showing average plant height, health status, and growth stages over time.
+To use the model, follow these steps in the interface tab: Setup button: Start the simulation and set up the initial environment with plants and soil. Go button: Starts the simulation cycle, where plants will grow and soil conditions will be updated. Sliders: Adjust parameters such as minimum nutrient level, temperature, moisture-level, and other environmental factors. This will influence the growth behavior of the plants. Graphs: Observe graphs showing average plant height, health status, and growth stages over time.
 
 ## THINGS TO NOTICE
 
