@@ -22,7 +22,7 @@ to setup
   clear-all
 
   ; Configurar parámetros iniciales
-  set max-plant-height 200
+  set max-plant-height 300
   set min-nutrient-level 6.0
   set ideal-temperature 20
   set ideal-precipitation 5
@@ -97,7 +97,7 @@ to go
       ; Revisar si la planta puede crecer
     if (GDD > 0) and (health = "healthy") and (nutrient-level >= min-nutrient-level) and (temperature >= ideal-temperature) and (moisture-level >= 50) [
       ; Incrementar la altura según el GDD y actualizar el estado de crecimiento
-      set height min list (height + GDD * 0.5) max-plant-height ; Ajuste del coeficiente de crecimiento
+      set height min list (height + GDD * 0.7) max-plant-height ; Ajuste del coeficiente de crecimiento
 
 
 
@@ -108,7 +108,7 @@ to go
         set growth-stage "seedling"
         set color lime
       ]
-      if height > 100 [
+      if height > 150 [
         set growth-stage "mature"
         set color yellow
       ]
@@ -173,7 +173,6 @@ to actualizar-plots
   set-current-plot-pen "Mature"
   plot count plants with [growth-stage = "mature"]
 end
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 829
@@ -247,7 +246,7 @@ Hight cm
 0.0
 100.0
 0.0
-200.0
+300.0
 false
 true
 "" ""
@@ -343,7 +342,7 @@ temperature
 temperature
 10
 50
-25.0
+24.0
 1
 1
 °C
