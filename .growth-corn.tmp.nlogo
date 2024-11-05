@@ -257,7 +257,7 @@ PENS
 PLOT
 31
 427
-592
+548
 632
 Plant Growth Stage
 days
@@ -277,7 +277,7 @@ PENS
 PLOT
 320
 220
-607
+596
 404
 Plant Health Status
 days
