@@ -3,23 +3,18 @@ globals [
   min-nutrient-level       ; Nivel mínimo de nutrientes para el crecimiento
   ideal-temperature        ; Temperatura ideal para el crecimiento
   ideal-precipitation      ; Precipitación ideal en mm
+  light-hours              ; Horas ideales de luz solar para el crecimiento
   row-spacing              ; Espacio entre hileras en cm
   plant-spacing            ; Espacio entre plantas en una hilera en cm
-  height-total             ; Variable que determina el crecimiento
-
-  ; Nuevas variables
-  average-height           ; Altura promedio del cultivo
-  health-percentage        ; Porcentaje de plantas saludables
-  growth-efficiency        ; Eficiencia de crecimiento según condiciones
-  seedling-threshold       ; Umbral de altura para la etapa de plántula
-  mature-threshold         ; Umbral de altura para la etapa madura
+  altitud                  ; Altitud del terreno
 ]
 
 breed [plants plant]       ; Definir entidad de la planta
 
+
 plants-own [
   height                   ; Altura de la planta
-  health                   ; Estado de salud: sana, estresada, enferma
+  health                   ; Estado de salud: sana o enferma
   growth-stage             ; Etapa de crecimiento: semilla, plántula, madura
 ]
 
@@ -28,20 +23,20 @@ to setup
 
   ; Configurar parámetros iniciales
   set max-plant-height 300
-  set min-nutrient-level 6.0  ; pH ideal para el crecimiento
-  set ideal-temperature 25
-  set ideal-precipitation 50
-  set row-spacing 10         ; Espacio entre hileras en dm
-  set plant-spacing 10       ; Espacio entre plantas en dm
-  set height-total 0
-  set seedling-threshold 10
-  set mature-threshold 150
+  set min-nutrient-level 6.0
+  set ideal-temperature 20
+  set ideal-precipitation 5
+  set light-hours 12
+  set row-spacing 10 ;dm
+  set plant-spacing 10 ;dm
+  set altitud 500
 
   ; Ajuste de la vista de la "hectárea"
-  resize-world -25 25 -25 25 ; Ajusta el tamaño de la vista
+  resize-world -25 25 -25 25 ; Ajusta el tamaño de la vista para que sea más compacta
   setup-terreno
   setup-plantas
   reset-ticks
+
 end
 
 to setup-terreno
@@ -51,54 +46,69 @@ to setup-terreno
     set nutrient-level 6.0 ; ph ideal
     set temperature 25     ; °C
   ]
+
+
 end
 
-
-
 to setup-plantas
-  let row-start -20  ; Posición inicial en el eje y para la primera fila
-  let plant-height-initial 5  ; Altura inicial de cada planta
+  let row-start -20  ;se define la posicion inicial en el eje y para la primera fila
+  let plant-height-initial 5  ; se define la altura de cada planta
 
+  ; Para cada hilera
   while [row-start <= 20] [
-    let col-start -20  ; Posición inicial en el eje x para la primera planta en la fila
+    let col-start -20    ; posición inicial en el eje x para la primera planta en la fila
 
+    ; Para cada planta en la hilera
     while [col-start <= 20] [
+      ; Crear una planta en la posición especificada
       create-plants 1 [
-        setxy col-start row-start
+        setxy col-start row-start ; Colocar la planta en la posición de la cuadrícula
         set shape "plant"
         set color green
         set height plant-height-initial
         set health "healthy"
-        set growth-stage "seed"
+        set growth-stage "seed" ; Etapa inicial de crecimiento
+
       ]
-      set col-start col-start + plant-spacing / 10 ; Espacio entre plantas
+      set col-start col-start + plant-spacing / 10 ; Ajuste de un espacio entre plantas en cm
     ]
-    set row-start row-start + row-spacing / 10    ; Espacio entre hileras
+    set row-start row-start + row-spacing / 10    ; Ajuste de espacio entre hileras en cm
   ]
 end
 
 
 to go
-  if ticks >= 100 [ stop ] ; Finaliza la simulación después de 100 días
 
+  wait 0.1
+  ; Finaliza la simulación (100 days)
+  if ticks >= 100 [
+    stop
+  ]
+
+  ; Definir condiciones de crecimiento de cada planta
   ask plants [
-    ; Variables climáticas
-    let temp-current-min max list 10 (random-float 20 + 10)
-    let temp-current-max min list 30 (random-float 20 + 10)
-    let GDD max list 0 ((temp-current-min + temp-current-max) / 2 - 10) ; °C
+    let temp-current-min max list 10 (random-float 20 + 10) ; Temperatura mínima ajustada a 10°C si es menor
+    let temp-current-max min list 30 (random-float 20 + 10) ; Temperatura máxima ajustada a 30°C si es mayor
 
-       ; Revisar si la planta puede crecer
-    if (GDD > 0) and (health = "healthy") and (nutrient-level >= min-nutrient-level) and (temperature >= ideal-temperature) OR (moisture-level >= 50) [
+    ; Calcular GDD utilizando las temperaturas ajustadas
+    let GDD ((temp-current-min + temp-current-max) / 2) - 10 ; °C
+
+
+
+
+      ; Revisar si la planta puede crecer
+    if (GDD > 0) and (health = "healthy") OR (nutrient-level >= min-nutrient-level) and (temperature >= ideal-temperature) OR (moisture-level >= 50) [
       ; Incrementar la altura según el GDD y actualizar el estado de crecimiento
       set height min list (height + GDD * 0.7) max-plant-height ; Ajuste del coeficiente de crecimiento
-      print(height)
+
+
+
 
       ; Cambiar las etapas de crecimiento y color según la altura
       if height > 10 [
         set growth-stage "seedling"
         set color lime
       ]
-
       if height > 150 [
         set growth-stage "mature"
         set color yellow
@@ -116,75 +126,46 @@ to go
       set health "sick"
       set color brown
     ]
-
-
-
-    ; Crecimiento según condiciones
-   ; let growth-increment 0
-    ;let max-growth-increment 5
-
-    ; Condiciones ideales para el crecimiento
-    ;if GDD > 0 [
-     ; set growth-increment growth-increment + (GDD * 0.7) ; Ajuste para ser más gradual
-    ;]
-    ;if ([nutrient-level] of patch-here >= min-nutrient-level) [
-     ; set growth-increment growth-increment + 0.7
-    ;]
-
-    ;if ([moisture-level] of patch-here >= 50) [
-    ;  set growth-increment growth-increment + 0.7
-    ;]
-
-
-
-    ;if ([temperature] of patch-here >= ideal-temperature) [
-    ; set growth-increment growth-increment + 0.7
-    ;]
-
-    ; Aplicar el crecimiento máximo por día
-    ;set growth-increment min list growth-increment max-growth-increment
-    ;set height height + growth-increment
-    ;set height min list height max-plant-height
-
-    ; Actualizar el estado de crecimiento
-    ;if height > seedling-threshold [
-   ;set growth-stage "seedling"
-     ; set color lime
-   ; ]
-   ; if height > mature-threshold [
-    ;  set growth-stage "mature"
-    ;  set color yellow
-    ;]
-    ;if height >= max-plant-height [
-   ;   set health "mature"
-   ;   set color turquoise
-  ;  ]
   ]
 
-  ; Actualizar plots y avanzar el tiempo
+  ; Simular cambios en el suelo (humedad y nutrientes)
+  ;ask patches [
+    ; Simular la reducción aleatoria en los niveles de humedad y nutrientes
+   ; set moisture-level max list 0 (moisture-level - random 5)
+   ; set nutrient-level max list 0 (nutrient-level - random 3)
+  ;]
+
+  ; Actualiza gráficos y cuenta los ticks
   actualizar-plots
   tick
 end
 
+
+
+
+
+
 to actualizar-plots
-  ; Gráfica de altura promedio
+    ; Gráfico de Altura Promedio
+  ; Gráfico de Altura Promedio
   set-current-plot "Average Plant Height"
   set-current-plot-pen "Height"
-  ifelse any? plants [
-    plot mean [height] of plants
+  ifelse any? plants with [health = "healthy"] [
+    plot mean [height] of plants with [health = "healthy"]
   ] [
-    plot 0
+    plot 0 ; Valor predeterminado si no hay plantas saludables
   ]
-  ; Gráfica de salud de plantas
+
+
+  ;Gráfico de Estado de Salud de las Plantas
   set-current-plot "Plant Health Status"
   set-current-plot-pen "Healthy"
   plot count plants with [health = "healthy"]
-  set-current-plot-pen "Stressed"
-  plot count plants with [health = "stressed"]
   set-current-plot-pen "Sick"
   plot count plants with [health = "sick"]
 
-  ; Gráfica de etapas de crecimiento
+
+  ; Gráfico de Etapa de Crecimiento
   set-current-plot "Plant Growth Stage"
   set-current-plot-pen "Seed"
   plot count plants with [growth-stage = "seed"]
@@ -222,10 +203,10 @@ ticks
 30.0
 
 BUTTON
-128
-57
-191
-90
+127
+136
+190
+169
 go
 go
 T
@@ -239,10 +220,10 @@ NIL
 1
 
 BUTTON
-45
-57
-108
-90
+43
+135
+106
+168
 setup
 setup
 NIL
@@ -268,7 +249,7 @@ Hight cm
 0.0
 300.0
 false
-false
+true
 "" ""
 PENS
 "Height" 1.0 0 -8862290 true "" "plot mean [height] of plants"
@@ -311,13 +292,12 @@ true
 PENS
 "Healthy" 1.0 0 -15040220 true "" "plot count plants with [health = \"healthy\"]"
 "Sick" 1.0 0 -8431303 true "" "plot count plants with [health = \"sick\"]"
-"stressed" 1.0 0 -7500403 true "" " plot count plants with [health = \"stressed\"]"
 
 MONITOR
-477
-137
-544
-182
+485
+132
+552
+177
 plants
 count plants
 3
@@ -325,10 +305,10 @@ count plants
 11
 
 SLIDER
-32
-170
-204
-203
+288
+131
+460
+164
 moisture-level
 moisture-level
 0
@@ -340,10 +320,10 @@ moisture-level
 HORIZONTAL
 
 SLIDER
-31
-128
-203
-161
+289
+73
+461
+106
 nutrient-level
 nutrient-level
 0
@@ -355,10 +335,10 @@ ph
 HORIZONTAL
 
 SLIDER
-233
-67
-405
-100
+484
+75
+656
+108
 temperature
 temperature
 10
@@ -367,46 +347,6 @@ temperature
 1
 1
 °C
-HORIZONTAL
-
-CHOOSER
-450
-65
-588
-110
-visualization
-visualization
-"scenaryOne" "scenaryTwo"
-0
-
-SLIDER
-229
-168
-401
-201
-altitud
-altitud
-0
-3000
-1242.0
-1
-1
-metros
-HORIZONTAL
-
-SLIDER
-232
-120
-404
-153
-light-hours
-light-hours
-0
-24
-10.0
-1
-1
-horas
 HORIZONTAL
 
 @#$#@#$#@

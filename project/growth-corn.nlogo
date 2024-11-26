@@ -97,7 +97,7 @@ to go
 
 
       ; Revisar si la planta puede crecer
-    if (GDD > 0) and (health = "healthy") and (nutrient-level >= min-nutrient-level) and (temperature >= ideal-temperature) and (moisture-level >= 50) [
+    if (GDD > 0) and (health = "healthy") OR (nutrient-level >= min-nutrient-level) and (temperature >= ideal-temperature) OR (moisture-level >= 50) [
       ; Incrementar la altura según el GDD y actualizar el estado de crecimiento
       set height min list (height + GDD * 0.7) max-plant-height ; Ajuste del coeficiente de crecimiento
 
@@ -125,7 +125,7 @@ to go
     if GDD <= 0 or health != "healthy" [
       ; Si el GDD no es suficiente, la planta podría enfermar
       set health "sick"
-      set color red
+      set color brown
     ]
   ]
 
