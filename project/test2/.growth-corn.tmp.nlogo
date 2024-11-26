@@ -87,11 +87,12 @@ to go
     let temp-current-max min list 30 (random-float 20 + 10)
     let GDD max list 0 ((temp-current-min + temp-current-max) / 2 - 10) ; °C
 
+
        ; Revisar si la planta puede crecer
     if (GDD > 0) and (health = "healthy") and (nutrient-level >= min-nutrient-level) and (temperature >= ideal-temperature) OR (moisture-level >= 50) [
       ; Incrementar la altura según el GDD y actualizar el estado de crecimiento
       set height min list (height + GDD * 0.7) max-plant-height ; Ajuste del coeficiente de crecimiento
-      print(height)
+      ;print(height)
 
       ; Cambiar las etapas de crecimiento y color según la altura
       if height > 10 [
@@ -110,7 +111,6 @@ to go
         set color brown
       ]
     ]
-
     if GDD <= 0 or health != "healthy" [
       ; Si el GDD no es suficiente, la planta podría enfermar
       set health "sick"

@@ -47,11 +47,13 @@ end
 to setup-terreno
   ask patches [
     set pcolor brown
-    set moisture-level moisture-level  ; % de humedad
-    set nutrient-level nutrient-level ; pH ideal
-    set temperature temperature     ; °C
+    set moisture-level 50  ; %
+    set nutrient-level 6.0 ; ph ideal
+    set temperature 25     ; °C
   ]
 end
+
+
 
 to setup-plantas
   let row-start -20  ; Posición inicial en el eje y para la primera fila
@@ -83,48 +85,80 @@ to go
     ; Variables climáticas
     let temp-current-min max list 10 (random-float 20 + 10)
     let temp-current-max min list 30 (random-float 20 + 10)
-    let GDD max list 0 ((temp-current-min + temp-current-max) / 2 - 10)
+    let GDD max list 0 ((temp-current-min + temp-current-max) / 2 - 10) ; °C
+
+
+       ; Revisar si la planta puede crecer
+    if (GDD > 0) and (health = "healthy") and (nutrient-level >= min-nutrient-level) and (temperature >= ideal-temperature) OR (moisture-level >= 50) [
+      ; Incrementar la altura según el GDD y actualizar el estado de crecimiento
+      set height min list (height + GDD * 0.7) max-plant-height ; Ajuste del coeficiente de crecimiento
+      ;print(height)
+
+      ; Cambiar las etapas de crecimiento y color según la altura
+      if height > 10 [
+        set growth-stage "seedling"
+        set color lime
+      ]
+
+      if height > 150 [
+        set growth-stage "mature"
+        set color yellow
+      ]
+
+      ; Si la planta alcanza su altura máxima, detiene su crecimiento
+      if height >= max-plant-height [
+        set health "mature"
+        set color brown
+      ]
+    ]
+    if GDD <= 0 or health != "healthy" [
+      ; Si el GDD no es suficiente, la planta podría enfermar
+      set health "sick"
+      set color brown
+    ]
+
+
 
     ; Crecimiento según condiciones
-    let growth-increment 0
-    let max-growth-increment 5
+   ; let growth-increment 0
+    ;let max-growth-increment 5
 
     ; Condiciones ideales para el crecimiento
-    if GDD > 0 [
-      set growth-increment growth-increment + (GDD * 0.7) ; Ajuste para ser más gradual
-    ]
-    if ([nutrient-level] of patch-here >= min-nutrient-level) [
-      set growth-increment growth-increment + 0.7
-    ]
+    ;if GDD > 0 [
+     ; set growth-increment growth-increment + (GDD * 0.7) ; Ajuste para ser más gradual
+    ;]
+    ;if ([nutrient-level] of patch-here >= min-nutrient-level) [
+     ; set growth-increment growth-increment + 0.7
+    ;]
 
-    if ([moisture-level] of patch-here >= 50) [
-      set growth-increment growth-increment + 0.7
-    ]
+    ;if ([moisture-level] of patch-here >= 50) [
+    ;  set growth-increment growth-increment + 0.7
+    ;]
 
 
 
-    if ([temperature] of patch-here >= ideal-temperature) [
-      set growth-increment growth-increment + 0.7
-    ]
+    ;if ([temperature] of patch-here >= ideal-temperature) [
+    ; set growth-increment growth-increment + 0.7
+    ;]
 
     ; Aplicar el crecimiento máximo por día
-    set growth-increment min list growth-increment max-growth-increment
-    set height height + growth-increment
-    set height min list height max-plant-height
+    ;set growth-increment min list growth-increment max-growth-increment
+    ;set height height + growth-increment
+    ;set height min list height max-plant-height
 
     ; Actualizar el estado de crecimiento
-    if height > seedling-threshold [
-      set growth-stage "seedling"
-      set color lime
-    ]
-    if height > mature-threshold [
-      set growth-stage "mature"
-      set color yellow
-    ]
-    if height >= max-plant-height [
-      set health "mature"
-      set color turquoise
-    ]
+    ;if height > seedling-threshold [
+   ;set growth-stage "seedling"
+     ; set color lime
+   ; ]
+   ; if height > mature-threshold [
+    ;  set growth-stage "mature"
+    ;  set color yellow
+    ;]
+    ;if height >= max-plant-height [
+   ;   set health "mature"
+   ;   set color turquoise
+  ;  ]
   ]
 
   ; Actualizar plots y avanzar el tiempo
@@ -141,7 +175,6 @@ to actualizar-plots
   ] [
     plot 0
   ]
-
   ; Gráfica de salud de plantas
   set-current-plot "Plant Health Status"
   set-current-plot-pen "Healthy"
@@ -330,7 +363,7 @@ temperature
 temperature
 10
 50
-20.0
+25.0
 1
 1
 °C
@@ -370,7 +403,7 @@ light-hours
 light-hours
 0
 24
-4.0
+10.0
 1
 1
 horas
