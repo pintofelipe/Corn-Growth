@@ -5,7 +5,7 @@ globals [
   ideal-precipitation      ; Precipitación ideal en mm
   row-spacing              ; Espacio entre hileras en cm
   plant-spacing            ; Espacio entre plantas en una hilera en cm
-  height-total             ; Variable que determina el crecimiento
+
 
   ; Nuevas variables
   average-height           ; Altura promedio del cultivo
@@ -33,7 +33,6 @@ to setup
   set ideal-precipitation 50
   set row-spacing 10         ; Espacio entre hileras en dm
   set plant-spacing 10       ; Espacio entre plantas en dm
-  set height-total 0
   set seedling-threshold 10
   set mature-threshold 150
 
@@ -81,25 +80,53 @@ end
 to go
   if ticks >= 100 [ stop ] ; Finaliza la simulación después de 100 días
 
+
+
+
   ask plants [
+
+    let height-total 0
     ; Variables climáticas
     let temp-current-min max list 10 (random-float 20 + 10)
     let temp-current-max min list 30 (random-float 20 + 10)
     let GDD max list 0 ((temp-current-min + temp-current-max) / 2 - 10) ; °C
 
-
-    if (temperature >= 20) and  (temperature <= 30)[
-
+    ifelse (temperature >= 20 and temperature <= 30) [
+      ; good
+    ] [
+      ifelse (temperature < 20) [
+        ; Reducción de crecimiento
+        set height-total (height-total + 1)
+      ] [
+        ; Estrés y enfermedades
+        set height-total (height-total + 2)
+      ]
     ]
 
-   if (temperature < 20)[
-
+    if (light-hours < 4)[
+     set height-total (height-total * 0.1)
     ]
 
-   if (temperature > 30)[
 
-
+   ifelse (altitude >= 1000 and altitude <= 2000) [
+      ; Crecimiento óptimo
+      user-message "Crecimiento óptimo del maíz."
+    ] [
+      ifelse (altitude >= 0 and altitude < 1000) [
+        ; Crecimiento bueno pero más lento
+        user-message "Crecimiento bueno, aunque un poco más lento."
+      ] [
+        ifelse (altitude > 2000 and altitude <= 3000) [
+          ; Crecimiento lento con riesgos
+          user-message "Crecimiento lento, con riesgo de heladas."
+        ] [
+          ; Altitud extrema, no germina
+          user-message "El maíz no crece a esta altitud extrema."
+        ]
+      ]
     ]
+
+
 
 
        ; Revisar si la planta puede crecer
@@ -367,8 +394,8 @@ SLIDER
 168
 401
 201
-altitud
-altitud
+altitude
+altitude
 0
 3000
 1242.0
