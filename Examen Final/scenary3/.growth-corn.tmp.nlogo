@@ -7,6 +7,8 @@ globals [
   plant-spacing            ; Espacio entre plantas en una hilera en cm
 
 
+
+
   ; Nuevas variables
   average-height           ; Altura promedio del cultivo
   health-percentage        ; Porcentaje de plantas saludables
@@ -78,6 +80,7 @@ end
 
 to go
   if ticks >= 100 [ stop ] ; Finaliza la simulación después de 100 días
+
   ask plants [
 
     let height-total 0
@@ -86,8 +89,7 @@ to go
     let temp-current-max min list 30 (random-float 20 + 10)
     let GDD max list 0 ((temp-current-min + temp-current-max) / 2 - 10) ; °C
 
-
-       ; Revisar si la planta puede crecer
+      ; Revisar si la planta puede crecer
     if (GDD > 0) and (health = "healthy") and (nutrient-level >= min-nutrient-level) OR (moisture-level >= 50) [
       ; Incrementar la altura según el GDD y actualizar el estado de crecimiento
 
@@ -101,16 +103,17 @@ to go
           ifelse (temperature < 20) [
             ; Reducción de crecimiento
             set height-total (height-total - 2) ; Peso negativo
+            if (ticks = 90)[
+            ]
              ;user-message "Reducir crecimiento"
           ] [
             ; Estrés y enfermedades
           ; user-message "Estrés y enfermedades"
             set height-total (height-total - 3) ; Peso más negativo
-           ; set health "stressed" ; Marca la planta como estresada
+            set health "stressed" ; Marca la planta como estresada
           ]
         ]
       ]
-
 
 
       ; LIGHT-HOURS
@@ -118,7 +121,7 @@ to go
         if (light-hours <= 4) [
           ; Provoca crecimiento lento o muerte
            ;user-message "crecimiento lento o muerte"
-          set height-total height-total + 1 ; Penalización significativa
+          set height-total height-total  1 ; Penalización significativa
           set health "stressed" ; Marca la planta como estresada
         ]
       ]
@@ -151,10 +154,9 @@ to go
       ]
 
 
-
-
-
       ; Calcular la nueva altura considerando height-total
+
+
 
 
 
@@ -168,9 +170,7 @@ to go
          set height min list (height + GDD * 0.7) max-plant-height ; Ajuste del coeficiente de crecimiento
       ]
 
-
       ;print(height)
-
       ; Cambiar las etapas de crecimiento y color según la altura
       if height > 10 [
         set growth-stage "seedling"
@@ -188,22 +188,31 @@ to go
         set color brown
       ]
     ]
-    if GDD <= 0 or health != "healthy" [
-      ; Si el GDD no es suficiente, la planta podría enfermar
-      set health "sick"
-      set color brown
-    ]
+
+
+
+   ; if GDD <= 0 or health != "healthy" [
+       ; el GDD no es suficiente, la planta podría enfermar
+     ;  set health "sick"
+     ; set color blue
+    ;]
+
+     ; Cambiar color según estado
+    if health = "healthy" [ set color green ]
+    if health = "stressed" [ set color red ]
+    if health = "sick" [ set color blue ]
+
   ]
 
 
-  ; Actualizar plots y avanzar el tiempo
+
+  ; Actualizar plots y avanzar en el tiempo
   actualizar-plots
+
   tick
   tick-advance 1
   wait 0.1
 end
-
-
 
 
 
@@ -218,12 +227,16 @@ to actualizar-plots
   ]
   ; Gráfica de salud de plantas
   set-current-plot "Plant Health Status"
+
   set-current-plot-pen "Healthy"
   plot count plants with [health = "healthy"]
+
   set-current-plot-pen "Stressed"
   plot count plants with [health = "stressed"]
+
   set-current-plot-pen "Sick"
   plot count plants with [health = "sick"]
+
 
   ; Gráfica de etapas de crecimiento
   set-current-plot "Plant Growth Stage"
@@ -352,7 +365,7 @@ true
 PENS
 "Healthy" 1.0 0 -15040220 true "" "plot count plants with [health = \"healthy\"]"
 "Sick" 1.0 0 -8431303 true "" "plot count plants with [health = \"sick\"]"
-"stressed" 1.0 0 -7500403 true "" " plot count plants with [health = \"stressed\"]"
+"Stressed" 1.0 0 -7500403 true "" " plot count plants with [health = \"stressed\"]"
 
 MONITOR
 477
@@ -404,7 +417,7 @@ temperature
 temperature
 10
 50
-31.0
+29.0
 1
 1
 °C
@@ -429,7 +442,7 @@ altitude
 altitude
 0
 3000
-1264.0
+1262.0
 1
 1
 metros
@@ -444,7 +457,7 @@ light-hours
 light-hours
 0
 24
-9.0
+3.0
 1
 1
 horas
