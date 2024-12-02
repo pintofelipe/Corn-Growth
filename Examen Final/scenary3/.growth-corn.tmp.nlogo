@@ -205,6 +205,8 @@ end
 
 
 
+
+
 to actualizar-plots
   ; Gráfica de altura promedio
   set-current-plot "Average Plant Height"
