@@ -121,7 +121,7 @@ to go
         if (light-hours <= 4) [
           ; Provoca crecimiento lento o muerte
            ;user-message "crecimiento lento o muerte"
-          set height-total height-total  1 ; Penalización significativa
+          set height-total height-total - 3 ; Penalización significativa
           set health "stressed" ; Marca la planta como estresada
         ]
       ]
@@ -137,7 +137,7 @@ to go
         ][
           ifelse (altitude >= 0 and altitude < 1000) [
             ; Crecimiento bueno pero más lento
-            set height-total height-total + 2 ; Peso moderado
+            set height-total height-total - 1 ; Peso moderado
            ;user-message "crecimiento bueno pero más lento"
           ] [
             ifelse (altitude > 2000 and altitude <= 3000)[
@@ -199,8 +199,8 @@ to go
 
      ; Cambiar color según estado
     if health = "healthy" [ set color green ]
-    if health = "stressed" [ set color red ]
-    if health = "sick" [ set color blue ]
+    if health = "stressed" [ set color blue ]
+    if health = "sick" [ set color red ]
 
   ]
 
@@ -417,7 +417,7 @@ temperature
 temperature
 10
 50
-29.0
+25.0
 1
 1
 °C
@@ -442,7 +442,7 @@ altitude
 altitude
 0
 3000
-1262.0
+1543.0
 1
 1
 metros
@@ -455,9 +455,9 @@ SLIDER
 153
 light-hours
 light-hours
-0
+1
 24
-3.0
+1.0
 1
 1
 horas
