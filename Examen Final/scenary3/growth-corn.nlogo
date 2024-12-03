@@ -123,14 +123,17 @@ to go
            ;user-message "crecimiento lento o muerte"
           set height-total height-total - 3 ; Penalización significativa
           set health "stressed" ; Marca la planta como estresada
+           if height >= 200 [
+           set health "sick"
+           set color red
+           ]
         ]
       ]
 
 
-
      ; ALTITUDE
       if (altitude != 0) [ ; Verifica que el deslizador de altitud tenga un valor válido
-        ifelse (altitude >= 1000 and altitude <= 2000) [
+        ifelse (altitude >= 1000 and altitude <= 1600) [
           ; Crecimiento óptimo
            ;user-message "good"
           ;set height-total 0 ; Peso positivo
@@ -140,7 +143,7 @@ to go
             set height-total height-total - 1 ; Peso moderado
            ;user-message "crecimiento bueno pero más lento"
           ] [
-            ifelse (altitude > 2000 and altitude <= 3000)[
+            ifelse (altitude > 1600 and altitude <= 3000)[
               ; Crecimiento lento con riesgos
               set height-total height-total - 3 ; Penalización moderada
               set health "stressed" ; Marca la planta como estresada
@@ -417,7 +420,7 @@ temperature
 temperature
 10
 50
-19.0
+27.0
 1
 1
 °C
@@ -457,7 +460,7 @@ light-hours
 light-hours
 1
 24
-18.0
+2.0
 1
 1
 horas
